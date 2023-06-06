@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AGIFY</title>
+    <link rel="stylesheet" href="./styles/reset.css" />
+    <link rel="stylesheet" href="./styles/agify.css" />
+  </head>
+  <body>
+    <div class="navbar">
+      <ul>
+        <li><a href="./agify.html">AGIFY</a></li>
+        <li><a href="./cocktails.html">COCTAILS</a></li>
+        <li><a href="./kanye.html">KANYE</a></li>
+        <li><a href="./index.html">FRONT PAGE</a></li>
+      </ul>
+    </div>
+    <div class="content">
+      <form action="#">
+        <label for="quantity"
+          >For how many names would you like to predict the age of?</label
+        >
+        <input
+          type="number"
+          id="quantity"
+          name="name_quantity"
+          min="1"
+          max="10"
+          placeholder="1"
+        />
+        <label for="names"
+          >Which is (are) the name(s) that you're interested in? If you're
+          interested in knowing the age prediction of multiple names, separate
+          them with just a comma!</label
+        >
+        <input
+          type="text"
+          id="names"
+          name="input_names"
+          placeholder="e.g. 'Emma,Michael'"
+        />
+        <a><input type="submit" value="SUBMIT" /></a>
+      </form>
+      <div class="loader"></div>
+    </div>
+    <script src="./scripts/agify.js"></script>
+  </body>
+</html>
