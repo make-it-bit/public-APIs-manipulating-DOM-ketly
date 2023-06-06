@@ -83,11 +83,9 @@ const display_loading = (loader) => {
   const form = document.querySelector("form");
   form.remove();
 
-  console.log("loading started...");
   loader.classList.add("display");
 };
 
 const hide_loading = (loader) => {
-  console.log("loading ended...");
   loader.classList.remove("display");
 };
