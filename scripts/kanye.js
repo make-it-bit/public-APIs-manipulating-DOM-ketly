@@ -7,7 +7,7 @@ const main = () => {
   data.then((result) => {
     hide_loading(loader);
     console.log(result);
-    modify_dom(result);
+    display_response(result);
   });
 };
 
@@ -23,7 +23,7 @@ const fetch_data = async () => {
   }
 };
 
-const modify_dom = (data) => {
+const display_response = (data) => {
   const content = document.querySelector(".content");
   const div = document.createElement("div");
   div.setAttribute("class", "container");

@@ -1,33 +1,38 @@
-const submit_button = document.querySelector("input[type='submit']");
+document
+  .querySelector("input[type='submit']")
+  .addEventListener("click", (event) => {
+    event.preventDefault();
 
-submit_button.addEventListener("click", (event) => {
-  event.preventDefault();
+    const quantity_of_names = Number(
+      document.querySelector("input[type='number']").value
+    );
+    const names = document.querySelector("input[type='text']").value.split(",");
 
-  const quantity_of_names = Number(
-    document.querySelector("input[type='number']").value
-  );
-  const names = document.querySelector("input[type='text']").value.split(",");
-
-  if (!quantity_of_names || names[0] === "") {
-    alert("All the input fields must have a value!");
-    window.location.href = "./agify.html";
-  } else if (quantity_of_names != names.length) {
-    alert("The values of input fields doesn't match! Try again!");
-    window.location.href = "./agify.html";
-  }
-
-  const loader = document.querySelector(".loader");
-  display_loading(loader);
-  const data = fetch_data(quantity_of_names, names);
-  data.then((result) => {
-    hide_loading(loader);
-    if (quantity_of_names === 1) {
-      modify_dom([result]);
-    } else {
-      modify_dom(result);
+    if (!quantity_of_names || names[0] === "") {
+      alert("All the input fields must have a value!");
+      window.location.href = "./agify.html";
+    } else if (quantity_of_names != names.length) {
+      alert("The values of input fields doesn't match! Try again!");
+      window.location.href = "./agify.html";
     }
+
+    const loader = document.querySelector(".loader");
+    display_loading(loader);
+    const data = fetch_data(quantity_of_names, names);
+    data.then((result) => {
+      hide_loading(loader);
+      if (validate_response(result, quantity_of_names)) {
+        if (quantity_of_names === 1) {
+          display_response([result]);
+        } else {
+          display_response(result);
+        }
+      } else {
+        alert("The entered values are not in correct form! Try again!");
+        window.location.href = "./agify.html";
+      }
+    });
   });
-});
 
 const fetch_data = async (quantity_of_names, names) => {
   try {
@@ -52,7 +57,19 @@ const fetch_data = async (quantity_of_names, names) => {
   }
 };
 
-const modify_dom = (data) => {
+const validate_response = (response, quantity_of_names) => {
+  if (quantity_of_names === 1) {
+    response = [response];
+  }
+  for (let i = 0; i < response.length; i++) {
+    if (response[i].age === null) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const display_response = (data) => {
   const content = document.querySelector(".content");
   const div = document.createElement("div");
   div.setAttribute("class", "container");
