@@ -1,8 +1,9 @@
+let index_of_choice = 0;
+
 document
   .querySelector("input[type='submit']")
   .addEventListener("click", (event) => {
     event.preventDefault();
-    let index_of_choice = 0;
 
     if (
       document.querySelector("input[type='submit']").classList.contains("added")
@@ -21,24 +22,31 @@ document
         window.location.href = "./cocktails.html";
       } else {
         index_of_choice = display_additional_content(selected_option);
+        if (index_of_choice === 3) {
+          const data = fetch_data("", index_of_choice);
+          data.then((result) => {
+            console.log(result);
+          });
+        }
       }
     }
   });
 
 const fetch_data = async (input_value, index_of_choice) => {
   try {
-    console.log(index_of_choice);
     let response = null;
     if (index_of_choice === 1) {
       response = await fetch(
-        `www.thecocktaildb.com/api/json/v1/1/search.php?s=${input_value}`
+        `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${input_value}`
       );
     } else if (index_of_choice === 2) {
       response = await fetch(
-        `www.thecocktaildb.com/api/json/v1/1/search.php?i=${input_value}`
+        `https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${input_value}`
       );
     } else if (index_of_choice === 3) {
-      response = await fetch(`www.thecocktaildb.com/api/json/v1/1/random.php`);
+      response = await fetch(
+        `https://www.thecocktaildb.com/api/json/v1/1/random.php`
+      );
     }
     const data = await response.json();
     return data;

@@ -5,6 +5,7 @@
   justify-content: center;
   align-items: center;
 }
+
 .container {
   margin: 0 50px;
   height: 250px;
@@ -14,17 +15,20 @@
   background-color: rgb(255, 255, 234);
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
+
 h1 {
   margin: 65px 0 10px 0;
   padding: 0 15px;
   font-size: medium;
   font-family: serif;
 }
+
 p {
   margin: 0 0 45px 0;
   padding: 0 15px;
   font-family: serif;
 }
+
 button {
   width: 100px;
   height: 30px;
@@ -34,6 +38,7 @@ button {
   border-radius: 5px;
   cursor: pointer;
 }
+
 a {
   text-decoration: none;
   color: white;
