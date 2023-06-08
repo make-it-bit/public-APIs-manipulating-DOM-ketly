@@ -1,5 +1,3 @@
-const generate_button = document.querySelector("button");
-
 const main = () => {
   const loader = document.querySelector(".loader");
   display_loading(loader);
@@ -11,7 +9,7 @@ const main = () => {
   });
 };
 
-generate_button.addEventListener("click", main);
+document.querySelector("button").addEventListener("click", main);
 
 const fetch_data = async () => {
   try {
@@ -31,7 +29,7 @@ const display_response = (data) => {
 
   const h1 = document.createElement("h1");
   div.append(h1);
-  h1.innerText = `Kanye: "${data.quote}"!`;
+  h1.innerHTML = `Kanye: <span>"${data.quote}!"</span>`;
 
   const again_button = document.createElement("button");
   again_button.setAttribute("onClick", "main()");

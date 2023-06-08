@@ -81,9 +81,9 @@ const display_response = (data) => {
     div.append(inner_div);
 
     const p_name = document.createElement("p");
-    p_name.innerText = `Name: ${data[i].name}`;
+    p_name.innerHTML = `<span>Name:</span> ${data[i].name}`;
     const p_age = document.createElement("p");
-    p_age.innerText = `Predicted age: ${data[i].age}`;
+    p_age.innerHTML = `<span>Predicted age:</span> ${data[i].age}`;
     inner_div.appendChild(p_name);
     inner_div.appendChild(p_age);
   }
