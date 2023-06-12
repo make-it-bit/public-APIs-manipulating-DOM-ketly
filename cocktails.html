@@ -20,18 +20,16 @@
       </ul>
     </div>
     <div class="content">
-      <form action="#">
-        <h1>Time to get a drink after a long day?</h1>
-        <h2>Find your favorite cocktail recipe NOW!</h2>
-        <label for="cocktail">Choose a search method:</label>
-        <select id="cocktail" name="cocktail">
-          <option disabled selected value></option>
-          <option value="by-name">Search By Name</option>
-          <option value="by-ingredient">Search By Ingredient</option>
-          <option value="by-random">Search By Random</option>
-        </select>
-        <a id="submit"><input type="submit" value="SUBMIT" /></a>
-      </form>
+      <h1>Time to get a drink after a long day?</h1>
+      <h2>Find your favorite cocktail recipe NOW!</h2>
+      <label for="cocktail">Choose a search method:</label>
+      <select id="cocktail" name="cocktail">
+        <option class="select-placeholder" style="color: red" disabled selected value>choose something...</option>
+        <option value="by-name">Search By Name</option>
+        <option value="by-ingredient">Search By Ingredient</option>
+        <option value="by-random">Search By Random</option>
+      </select>
+      <button id="first-submit" type="submit">SUBMIT</button>
       <div class="loader"></div>
     </div>
     <script src="./scripts/script-cocktails.js"></script>
