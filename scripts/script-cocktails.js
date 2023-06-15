@@ -2,7 +2,6 @@ let searchMethod = null;
 
 document.getElementById('search-method').addEventListener('change', () => {
   searchMethod = document.getElementById('search-method').value;
-  console.log('vahetus');
   if (document.getElementById('text-input')) {
     document.getElementById('text-input').value = '';
   }

@@ -90,6 +90,10 @@ button {
   display: none;
 }
 
+.alert-message {
+  color: var(--red);
+}
+
 @keyframes spin {
   from {
     transform: rotate(0deg);
