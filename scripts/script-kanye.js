@@ -1,61 +1,45 @@
-const main = () => {
-  const loader = document.querySelector(".loader");
-  display_loading(loader);
-  const data = fetch_data();
-  data.then((result) => {
-    hide_loading(loader);
-    console.log(result);
-    display_response(result);
+document.getElementById('generate-button').addEventListener('click', () => {
+  document.querySelector('.container').style.display = 'none';
+  document.querySelector('.loader').style.display = 'block';
+  fetchData().then((result) => {
+    document.querySelector('.loader').style.display = 'none';
+    document.querySelector('.container').style.display = 'block';
+    displayResponse(result);
   });
-};
+});
 
-document.querySelector("button").addEventListener("click", main);
-
-const fetch_data = async () => {
+const fetchData = async () => {
   try {
-    const response = await fetch("https://api.kanye.rest/");
-    const data = await response.json();
+    const data = await fetch('https://api.kanye.rest/').then((res) => res.json());
     return data;
   } catch (error) {
-    console.log(error);
+    if (error instanceof TypeError) {
+      if (error.message === 'Failed to fetch') {
+        alert('Vastust ei ole võimalik kuvada, sest siht-veebiaadress on vigane! Proovi uuesti!');
+        window.location.href = './kanye.html';
+      }
+    }
   }
 };
 
-const display_response = (data) => {
-  const content = document.querySelector(".content");
-  const div = document.createElement("div");
-  div.setAttribute("class", "container");
-  content.append(div);
+const displayResponse = (data) => {
+  const container = document.querySelector('.container');
+  const h1 = document.querySelector('h1');
+  const generateButton = document.getElementById('generate-button');
 
-  const h1 = document.createElement("h1");
-  div.append(h1);
-  h1.innerHTML = `Kanye: <span>"${data.quote}!"</span>`;
-
-  const again_button = document.createElement("button");
-  again_button.setAttribute("onClick", "main()");
-  again_button.innerText = "GENERATE AGAIN";
-  div.append(again_button);
-
-  const cancel_button = document.createElement("button");
-  const a = document.createElement("a");
-  a.setAttribute("href", "./kanye.html");
-  a.innerText = "CANCEL";
-  cancel_button.append(a);
-  div.append(cancel_button);
-};
-
-const display_loading = (loader) => {
-  const content = document.querySelector(".content");
-  const form = document.querySelector("form");
-  const container = document.querySelector(".container");
-  if (content.contains(form)) {
-    form.remove();
-  } else if (content.contains(container)) {
-    container.remove();
+  if (['.', '!', '?'].some((el) => data.quote[data.quote.length - 1].includes(el))) {
+    h1.innerHTML = `Kanye: <span>"${data.quote}"</span>`;
+  } else {
+    h1.innerHTML = `Kanye: <span>"${data.quote}!"</span>`;
   }
-  loader.classList.add("display");
-};
 
-const hide_loading = (loader) => {
-  loader.classList.remove("display");
+  if (generateButton.innerText != 'GENERATE AGAIN') {
+    generateButton.innerText = 'GENERATE AGAIN';
+    const a = document.createElement('a');
+    a.setAttribute('href', './kanye.html');
+    const cancelButton = document.createElement('button');
+    cancelButton.innerText = 'CANCEL';
+    a.append(cancelButton);
+    container.append(a);
+  }
 };

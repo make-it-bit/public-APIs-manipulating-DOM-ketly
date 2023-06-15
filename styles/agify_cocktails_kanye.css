@@ -8,12 +8,12 @@ ul {
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #8b7176;
+  background-color: var(--light-brown);
 }
 
 li {
   float: left;
-  border-right: 1px solid #bbb;
+  border-right: 1px solid var(--light-grey);
 }
 
 li:last-child {
@@ -23,25 +23,24 @@ li:last-child {
 
 li a {
   display: inline-block;
-  color: white;
+  color: var(--white);
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
 }
 
 li a:hover:not(.active) {
-  background-color: #d4cec3;
+  background-color: var(--beige);
 }
 
-form,
 .container {
   border: 1px solid;
   border-radius: 5px;
-  background-color: #fff;
+  background-color: var(--white);
   padding: 20px;
   margin: 50px 0;
   width: 35%;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 4px 8px 0 var(--almost-black), 0 6px 20px 0 var(--almost-black);
   font-family: serif;
   text-align: center;
 }
@@ -65,36 +64,30 @@ p {
   margin: 10px 0;
 }
 
-input[type="number"],
-input[type="text"],
+input[type='number'],
+input[type='text'],
 select {
   width: 100%;
-  border: 1px solid #000000;
+  border: 1px solid var(--black);
   border-radius: 4px;
-  box-sizing: border-box;
   font-family: serif;
 }
 
-button,
-input[type="submit"] {
+button {
   width: 100%;
   padding: 14px 20px;
-  margin: 24px 0 8px 0;
+  margin: 9px 0 8px 0;
 }
 
 .loader {
   width: 5rem;
   height: 5rem;
-  border: 5px solid #000000;
-  border-top: 6px solid #8b7176;
+  border: 5px solid var(--black);
+  border-top: 6px solid var(--light-brown);
   border-radius: 100%;
   margin: auto;
   animation: spin 1s infinite linear;
   display: none;
-}
-
-.loader.display {
-  display: block;
 }
 
 @keyframes spin {

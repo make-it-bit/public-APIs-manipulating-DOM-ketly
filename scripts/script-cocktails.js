@@ -1,156 +1,177 @@
-let index_of_choice = 0;
-const submit_button = document.querySelector("input[type='submit']");
+let searchMethod = null;
 
-submit_button.addEventListener("click", (event) => {
-  event.preventDefault();
-
-  if (submit_button.classList.contains("added")) {
-    const input_value = document.querySelector("input[type='text']").value;
-    if (input_value == "") {
-      alert("The input was empty! Try again!");
-      window.location.href = "./cocktails.html";
+document.getElementById('search-method').addEventListener('change', () => {
+  searchMethod = document.getElementById('search-method').value;
+  console.log('vahetus');
+  if (document.getElementById('text-input')) {
+    document.getElementById('text-input').value = '';
+  }
+  if (inputValidation('')) {
+    if (searchMethod === 'by-name' || searchMethod === 'by-ingredient') {
+      displayAdditionalContent();
     } else {
-      main(input_value, index_of_choice);
-    }
-  } else {
-    const selected_option = document.querySelector("select").value;
-    if (!selected_option) {
-      alert("You must choose something from the list below before proceeding!");
-      window.location.href = "./cocktails.html";
-    } else {
-      index_of_choice = display_additional_content(selected_option);
-      if (index_of_choice === 3) {
-        main("", index_of_choice);
+      const additionalFields = document.querySelectorAll('.additional');
+      if (additionalFields.length > 0) {
+        for (let i = 0; i < additionalFields.length; i++) {
+          additionalFields[i].remove();
+        }
       }
     }
   }
 });
 
-const main = (input_value, index_of_choice) => {
-  const loader = document.querySelector(".loader");
-  display_loading(loader);
-  const data = fetch_data(input_value, index_of_choice);
-  data.then((result) => {
-    hide_loading(loader);
-    if (validate_response(result, index_of_choice)) {
-      display_response(result, index_of_choice);
-    } else {
-      alert("The entered values are not in correct form! Try again!");
-      window.location.href = "./cocktails.html";
-    }
-  });
+const displayAdditionalContent = () => {
+  if (searchMethod === 'by-name') {
+    additionalContent("What's the name of the desired cocktail?");
+    return;
+  } else if (searchMethod === 'by-ingredient') {
+    additionalContent("What's the name of the desired ingredient?");
+    return;
+  }
 };
 
-const fetch_data = async (input_value, index_of_choice) => {
+const additionalContent = (labelText) => {
+  const submitButton = document.getElementById('submit-button');
+  const labels = document.querySelectorAll('label');
+
+  let label = null;
+  if (labels.length === 1) {
+    label = document.createElement('label');
+    label.setAttribute('class', 'additional');
+    label.setAttribute('id', 'text-label');
+    submitButton.parentNode.insertBefore(label, submitButton);
+    const input = document.createElement('input');
+    input.setAttribute('class', 'additional');
+    input.setAttribute('type', 'text');
+    input.setAttribute('id', 'text-input');
+    submitButton.parentNode.insertBefore(input, submitButton);
+  } else {
+    label = labels[1];
+  }
+  label.innerText = labelText;
+};
+
+document.getElementById('submit-button').addEventListener('click', () => {
+  if (inputValidation('')) {
+    document.querySelector('.container').style.display = 'none';
+    document.querySelector('.loader').style.display = 'block';
+    let inputValue = null;
+    if (searchMethod === 'by-random') {
+      inputValue = '';
+    } else {
+      inputValue = document.getElementById('text-input').value;
+    }
+    fetchData(inputValue).then((result) => {
+      document.querySelector('.loader').style.display = 'none';
+      document.querySelector('.container').style.display = 'block';
+      if (inputValidation(result)) {
+        displayResponse(result);
+      }
+    });
+  }
+});
+
+const fetchData = async (inputValue) => {
   try {
     let response = null;
-    if (index_of_choice === 1) {
-      response = await fetch(
-        `https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${input_value}`
-      );
-    } else if (index_of_choice === 2) {
-      response = await fetch(
-        `https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${input_value}`
-      );
-    } else if (index_of_choice === 3) {
-      response = await fetch(
-        `https://www.thecocktaildb.com/api/json/v1/1/random.php`
-      );
+    if (searchMethod === 'by-name') {
+      response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?s=${inputValue}`).then((res) => res.json());
+    } else if (searchMethod === 'by-ingredient') {
+      response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?i=${inputValue}`).then((res) => res.json());
+    } else if (searchMethod === 'by-random') {
+      response = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/random.php`).then((res) => res.json());
     }
-    const data = await response.json();
-    return data;
+    return response;
   } catch (error) {
-    console.log(error);
+    if (error instanceof TypeError) {
+      if (error.message === 'Failed to fetch') {
+        alert('Vastust ei ole võimalik kuvada, sest siht-veebiaadress on vigane! Proovi uuesti!');
+        window.location.href = './cocktails.html';
+      }
+    }
   }
 };
 
-const display_additional_content = (selected_option) => {
-  if (selected_option === "by-name") {
-    additional_content("What's the name of the desired cocktail?");
-    return 1;
-  } else if (selected_option === "by-ingredient") {
-    additional_content("What's the name of the desired ingredient?");
-    return 2;
-  } else if (selected_option === "by-random") {
-    submit_button.setAttribute("class", "added");
-    return 3;
-  }
-};
-
-const additional_content = (label_text) => {
-  document.querySelector("label").remove();
-  document.querySelector("select").remove();
-
-  submit_button.setAttribute("class", "added");
-  const submit_link = document.querySelector("#submit");
-
-  const label = document.createElement("label");
-  label.innerText = label_text;
-  submit_link.parentNode.insertBefore(label, submit_link);
-  const input = document.createElement("input");
-  input.setAttribute("type", "text");
-  submit_link.parentNode.insertBefore(input, submit_link);
-};
-
-const validate_response = (response, index_of_choice) => {
-  if (index_of_choice === 2 && response.ingredients === null) {
-    return false;
-  } else if (response.drinks === null) {
-    return false;
-  }
-  return true;
-};
-
-const display_response = (data, index_of_choice) => {
-  const content = document.querySelector(".content");
-  const div = document.createElement("div");
-  div.setAttribute("class", "container");
-  content.append(div);
-
-  let array_length = 0;
-  if (index_of_choice === 2) {
-    array_length = data.ingredients.length;
-  } else {
-    array_length = data.drinks.length;
+const displayResponse = (data) => {
+  const container = document.querySelector('.container');
+  while (container.hasChildNodes()) {
+    container.removeChild(container.firstChild);
   }
 
-  for (let i = 0; i < array_length; i++) {
-    const inner_div = document.createElement("div");
-    inner_div.setAttribute("class", "inner_container");
-    div.append(inner_div);
+  let arrayLength = 0;
+  if (searchMethod === 'by-ingredient') {
+    arrayLength = data.ingredients.length;
+  } else if (searchMethod === 'by-name') {
+    arrayLength = data.drinks.length;
+  } else if (searchMethod === 'by-random') {
+    arrayLength = 1;
+  }
 
-    if (index_of_choice === 2) {
-      const h1_name = document.createElement("h1");
-      h1_name.innerText = data.ingredients[i].strIngredient;
-      const p_abv = document.createElement("p");
-      p_abv.innerText = `ABV (alcohol by value): ${data.ingredients[i].strABV}`;
-      inner_div.appendChild(h1_name);
-      inner_div.appendChild(p_abv);
+  for (let i = 0; i < arrayLength; i++) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'inner_container');
+    container.append(div);
+
+    if (searchMethod === 'by-ingredient') {
+      const h1 = document.createElement('h1');
+      h1.innerText = data.ingredients[i].strIngredient;
+      const p = document.createElement('p');
+      p.innerText = `ABV (alcohol by value): ${data.ingredients[i].strABV}`;
+      div.appendChild(h1);
+      div.appendChild(p);
     } else {
-      const h1_name = document.createElement("h1");
-      h1_name.innerText = data.drinks[i].strDrink;
-      const p_recipe = document.createElement("p");
-      p_recipe.innerText = data.drinks[i].strInstructions;
-      inner_div.appendChild(h1_name);
-      inner_div.appendChild(p_recipe);
+      const h1 = document.createElement('h1');
+      h1.innerText = data.drinks[i].strDrink;
+      const p = document.createElement('p');
+      if (['.', '!', '?'].some((el) => data.drinks[i].strInstructions[data.drinks[i].strInstructions.length - 1].includes(el))) {
+        p.innerText = data.drinks[i].strInstructions;
+      } else {
+        p.innerText = `${data.drinks[i].strInstructions}.`;
+      }
+      div.appendChild(h1);
+      div.appendChild(p);
     }
   }
 
-  const button = document.createElement("button");
-  const a = document.createElement("a");
-  a.setAttribute("href", "./cocktails.html");
-  a.innerText = "GO AGAIN";
-  button.append(a);
-  div.append(button);
+  const a = document.createElement('a');
+  a.setAttribute('href', './cocktails.html');
+  const againButton = document.createElement('button');
+  againButton.innerText = 'GO AGAIN';
+  a.append(againButton);
+  container.append(a);
 };
 
-const display_loading = (loader) => {
-  const form = document.querySelector("form");
-  form.remove();
+const inputValidation = (response) => {
+  const alertMessage = document.querySelector('.alert-message');
+  if (alertMessage) {
+    alertMessage.remove();
+  }
 
-  loader.classList.add("display");
-};
-
-const hide_loading = (loader) => {
-  loader.classList.remove("display");
+  if (response === '') {
+    const p = document.createElement('p');
+    p.setAttribute('class', 'alert-message');
+    if (!searchMethod) {
+      const label = document.getElementById('select-label');
+      p.innerText = 'You must choose something from the list below before proceeding!';
+      label.parentNode.insertBefore(p, label.nextSibling);
+      return false;
+    } else if (document.getElementById('text-input') && !document.getElementById('text-input').value) {
+      const label = document.getElementById('text-label');
+      p.innerText = 'You must type something in the textbox below before proceeding!';
+      label.parentNode.insertBefore(p, label.nextSibling);
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    if ((searchMethod === 'by-ingredient' && response.ingredients === null) || response.drinks === null) {
+      const label = document.getElementById('text-label');
+      const p = document.createElement('p');
+      p.setAttribute('class', 'alert-message');
+      p.innerText = 'The input is incorrect!';
+      label.parentNode.insertBefore(p, label.nextSibling);
+      return false;
+    }
+    return true;
+  }
 };

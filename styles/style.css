@@ -1,10 +1,21 @@
+:root {
+  --black: #000000;
+  --almost-black: #00000030;
+  --light-grey: #bbb;
+  --light-brown: #8b7176;
+  --light-yellow: #ffffe0;
+  --lighter-yellow: #ffffea;
+  --beige: #d4cec3;
+  --white: #ffffff;
+}
+
 body {
   font-family: serif;
 }
 
 .content {
   min-height: 100vh;
-  background-color: lightyellow;
+  background-color: var(--light-yellow);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,13 +23,13 @@ body {
 
 a {
   text-decoration: none;
-  color: white;
+  color: var(--white);
 }
 
 button,
-input[type="submit"] {
-  background-color: #8b7176;
-  color: white;
+input[type='submit'] {
+  background-color: var(--light-brown);
+  color: var(--white);
   box-shadow: 7px 6px 28px 1px rgba(0, 0, 0, 0.24);
   border: none;
   border-radius: 5px;

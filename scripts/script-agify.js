@@ -1,108 +1,122 @@
-document
-  .querySelector("input[type='submit']")
-  .addEventListener("click", (event) => {
-    event.preventDefault();
-
-    const quantity_of_names = Number(
-      document.querySelector("input[type='number']").value
-    );
-    const names = document.querySelector("input[type='text']").value.split(",");
-
-    if (!quantity_of_names || names[0] === "") {
-      alert("All the input fields must have a value!");
-      window.location.href = "./agify.html";
-    } else if (quantity_of_names != names.length) {
-      alert("The values of input fields doesn't match! Try again!");
-      window.location.href = "./agify.html";
-    }
-
-    const loader = document.querySelector(".loader");
-    display_loading(loader);
-    const data = fetch_data(quantity_of_names, names);
-    data.then((result) => {
-      hide_loading(loader);
-      if (validate_response(result, quantity_of_names)) {
-        if (quantity_of_names === 1) {
-          display_response([result]);
+document.getElementById('submit-button').addEventListener('click', () => {
+  const quantityOfNames = Number(document.getElementById('quantity-input').value);
+  const names = document.getElementById('names-input').value.split(',');
+  if (inputValidation(quantityOfNames, names)) {
+    document.querySelector('.container').style.display = 'none';
+    document.querySelector('.loader').style.display = 'block';
+    fetchData(quantityOfNames, names).then((result) => {
+      document.querySelector('.loader').style.display = 'none';
+      document.querySelector('.container').style.display = 'block';
+      if (responseValidation(result, quantityOfNames)) {
+        if (quantityOfNames === 1) {
+          displayResponse([result]);
         } else {
-          display_response(result);
+          displayResponse(result);
         }
-      } else {
-        alert("The entered values are not in correct form! Try again!");
-        window.location.href = "./agify.html";
       }
     });
-  });
+  }
+});
 
-const fetch_data = async (quantity_of_names, names) => {
+const inputValidation = (quantityOfNames, names) => {
+  const alertMessage = document.querySelector('.alert-message');
+  if (alertMessage) {
+    alertMessage.remove();
+  }
+
+  if (!quantityOfNames) {
+    const label = document.getElementById('quantity-label');
+    const p = document.createElement('p');
+    p.setAttribute('class', 'alert-message');
+    p.innerText = 'You must choose the quantity before proceeding!';
+    label.parentNode.insertBefore(p, label.nextSibling);
+    return false;
+  } else if (names[0] === '') {
+    const label = document.getElementById('names-label');
+    const p = document.createElement('p');
+    p.setAttribute('class', 'alert-message');
+    p.innerText = 'You must choose names before proceeding!';
+    label.parentNode.insertBefore(p, label.nextSibling);
+    return false;
+  } else if (quantityOfNames != names.length) {
+    const label = document.getElementById('quantity-label');
+    const p = document.createElement('p');
+    p.setAttribute('class', 'alert-message');
+    p.innerText = 'The values of input fields does not match! Try again!';
+    label.parentNode.insertBefore(p, label);
+    return false;
+  } else {
+    return true;
+  }
+};
+
+const fetchData = async (quantityOfNames, names) => {
   try {
     let response = null;
-    if (quantity_of_names === 1) {
-      response = await fetch(`https://api.agify.io?name=${names[0]}`);
+    if (quantityOfNames === 1) {
+      response = await fetch(`https://api.agify.io?name=${names[0]}`).then((res) => res.json());
     } else {
-      let endpoint = "https://api.agify.io?";
-      for (let i = 0; i < quantity_of_names; i++) {
-        if (i === quantity_of_names - 1) {
+      let endpoint = 'https://api.agify.io?';
+      for (let i = 0; i < quantityOfNames; i++) {
+        if (i === quantityOfNames - 1) {
           endpoint += `name[]=${names[i]}`;
         } else {
           endpoint += `name[]=${names[i]}&`;
         }
       }
-      response = await fetch(endpoint);
+      response = await fetch(endpoint).then((res) => res.json());
     }
-    const data = await response.json();
-    return data;
+    return response;
   } catch (error) {
-    console.log(error);
+    if (error instanceof TypeError) {
+      if (error.message === 'Failed to fetch') {
+        alert('Vastust ei ole võimalik kuvada, sest siht-veebiaadress on vigane! Proovi uuesti!');
+        window.location.href = './agify.html';
+      }
+    }
   }
 };
 
-const validate_response = (response, quantity_of_names) => {
-  if (quantity_of_names === 1) {
+const responseValidation = (response, quantityOfNames) => {
+  if (quantityOfNames === 1) {
     response = [response];
   }
   for (let i = 0; i < response.length; i++) {
     if (response[i].age === null) {
+      const label = document.getElementById('quantity-label');
+      const p = document.createElement('p');
+      p.setAttribute('class', 'alert-message');
+      p.innerText = 'The input is incorrect!';
+      label.parentNode.insertBefore(p, label);
       return false;
     }
   }
   return true;
 };
 
-const display_response = (data) => {
-  const content = document.querySelector(".content");
-  const div = document.createElement("div");
-  div.setAttribute("class", "container");
-  content.append(div);
-
-  for (let i = 0; i < data.length; i++) {
-    const inner_div = document.createElement("div");
-    inner_div.setAttribute("class", "inner_container");
-    div.append(inner_div);
-
-    const p_name = document.createElement("p");
-    p_name.innerHTML = `<span>Name:</span> ${data[i].name}`;
-    const p_age = document.createElement("p");
-    p_age.innerHTML = `<span>Predicted age:</span> ${data[i].age}`;
-    inner_div.appendChild(p_name);
-    inner_div.appendChild(p_age);
+const displayResponse = (data) => {
+  const container = document.querySelector('.container');
+  while (container.hasChildNodes()) {
+    container.removeChild(container.firstChild);
   }
 
-  const button = document.createElement("button");
-  const a = document.createElement("a");
-  a.setAttribute("href", "./agify.html");
-  a.innerText = "GO AGAIN";
-  button.append(a);
-  div.append(button);
-};
+  for (let i = 0; i < data.length; i++) {
+    const div = document.createElement('div');
+    div.setAttribute('class', 'inner_container');
+    container.append(div);
 
-const display_loading = (loader) => {
-  const form = document.querySelector("form");
-  form.remove();
+    const p1 = document.createElement('p');
+    p1.innerHTML = `<span>Name:</span> ${data[i].name}`;
+    const p2 = document.createElement('p');
+    p2.innerHTML = `<span>Predicted age:</span> ${data[i].age}`;
+    div.appendChild(p1);
+    div.appendChild(p2);
+  }
 
-  loader.classList.add("display");
-};
-
-const hide_loading = (loader) => {
-  loader.classList.remove("display");
+  const a = document.createElement('a');
+  a.setAttribute('href', './agify.html');
+  const againButton = document.createElement('againButton');
+  againButton.innerText = 'GO AGAIN';
+  a.append(againButton);
+  container.append(a);
 };

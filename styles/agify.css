@@ -1,10 +1,10 @@
-input[type="number"],
-input[type="text"] {
+input[type='number'],
+input[type='text'] {
   padding: 10px 15px;
   margin: 8px 0 20px 0;
 }
 
-input[type="text"] {
+input[type='text'] {
   margin-bottom: 0;
 }
 
@@ -15,4 +15,12 @@ input[type="text"] {
 
 span {
   font-weight: bold;
+}
+
+.alert-message {
+  color: rgb(255, 0, 68);
+}
+
+p {
+  margin: 5px 0;
 }
