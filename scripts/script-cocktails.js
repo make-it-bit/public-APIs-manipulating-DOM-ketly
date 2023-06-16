@@ -5,7 +5,7 @@ document.getElementById('search-method').addEventListener('change', () => {
   if (document.getElementById('text-input')) {
     document.getElementById('text-input').value = '';
   }
-  if (inputValidation('')) {
+  if (inputValidation()) {
     if (searchMethod === 'by-name' || searchMethod === 'by-ingredient') {
       displayAdditionalContent();
     } else {
@@ -51,7 +51,7 @@ const additionalContent = (labelText) => {
 };
 
 document.getElementById('submit-button').addEventListener('click', () => {
-  if (inputValidation('')) {
+  if (inputValidation()) {
     document.querySelector('.container').style.display = 'none';
     document.querySelector('.loader').style.display = 'block';
     let inputValue = null;
@@ -63,7 +63,7 @@ document.getElementById('submit-button').addEventListener('click', () => {
     fetchData(inputValue).then((result) => {
       document.querySelector('.loader').style.display = 'none';
       document.querySelector('.container').style.display = 'block';
-      if (inputValidation(result)) {
+      if (responseValidation(result)) {
         displayResponse(result);
       }
     });
@@ -140,37 +140,41 @@ const displayResponse = (data) => {
   container.append(a);
 };
 
-const inputValidation = (response) => {
+const inputValidation = () => {
   const alertMessage = document.querySelector('.alert-message');
   if (alertMessage) {
     alertMessage.remove();
   }
 
-  if (response === '') {
-    const p = document.createElement('p');
-    p.setAttribute('class', 'alert-message');
-    if (!searchMethod) {
-      const label = document.getElementById('select-label');
-      p.innerText = 'You must choose something from the list below before proceeding!';
-      label.parentNode.insertBefore(p, label.nextSibling);
-      return false;
-    } else if (document.getElementById('text-input') && !document.getElementById('text-input').value) {
-      const label = document.getElementById('text-label');
-      p.innerText = 'You must type something in the textbox below before proceeding!';
-      label.parentNode.insertBefore(p, label.nextSibling);
-      return false;
-    } else {
-      return true;
-    }
-  } else {
-    if ((searchMethod === 'by-ingredient' && response.ingredients === null) || response.drinks === null) {
-      const label = document.getElementById('text-label');
-      const p = document.createElement('p');
-      p.setAttribute('class', 'alert-message');
-      p.innerText = 'The input is incorrect!';
-      label.parentNode.insertBefore(p, label.nextSibling);
-      return false;
-    }
-    return true;
+  const p = document.createElement('p');
+  p.setAttribute('class', 'alert-message');
+  if (!searchMethod) {
+    const label = document.getElementById('select-label');
+    p.innerText = 'You must choose something from the list below before proceeding!';
+    label.parentNode.insertBefore(p, label.nextSibling);
+    return false;
+  } else if (document.getElementById('text-input') && !document.getElementById('text-input').value) {
+    const label = document.getElementById('text-label');
+    p.innerText = 'You must type something in the textbox below before proceeding!';
+    label.parentNode.insertBefore(p, label.nextSibling);
+    return false;
   }
+  return true;
+};
+
+const responseValidation = (response) => {
+  const alertMessage = document.querySelector('.alert-message');
+  if (alertMessage) {
+    alertMessage.remove();
+  }
+
+  const p = document.createElement('p');
+  p.setAttribute('class', 'alert-message');
+  if ((searchMethod === 'by-ingredient' && response.ingredients === null) || response.drinks === null) {
+    const label = document.getElementById('text-label');
+    p.innerText = 'The input is incorrect!';
+    label.parentNode.insertBefore(p, label.nextSibling);
+    return false;
+  }
+  return true;
 };
