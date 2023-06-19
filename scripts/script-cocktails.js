@@ -55,7 +55,7 @@ document.getElementById('submit-button').addEventListener('click', async () => {
     } else {
       inputValue = document.getElementById('text-input').value;
     }
-    const result = fetchData(inputValue);
+    const result = await fetchData(inputValue);
     document.querySelector('.loader').style.display = 'none';
     document.querySelector('.container').style.display = 'block';
     if (responseValidation(result)) {

@@ -4,7 +4,7 @@ document.getElementById('submit-button').addEventListener('click', async () => {
   if (inputValidation({ quantityOfNames, names })) {
     document.querySelector('.container').style.display = 'none';
     document.querySelector('.loader').style.display = 'block';
-    const result = fetchData({ quantityOfNames, names });
+    const result = await fetchData({ quantityOfNames, names });
     document.querySelector('.loader').style.display = 'none';
     document.querySelector('.container').style.display = 'block';
     if (responseValidation({ result, quantityOfNames })) {
@@ -77,10 +77,10 @@ const fetchData = async (input) => {
 
 const responseValidation = (data) => {
   if (data.quantityOfNames === 1) {
-    data.response = [data.response];
+    data.result = [data.result];
   }
-  for (let i = 0; i < data.response.length; i++) {
-    if (data.response[i].age === null) {
+  for (let i = 0; i < data.result.length; i++) {
+    if (data.result[i].age === null) {
       const label = document.getElementById('quantity-label');
       const p = document.createElement('p');
       p.setAttribute('class', 'alert-message');
@@ -111,7 +111,7 @@ const displayResponse = (data) => {
   }
   const a = document.createElement('a');
   a.setAttribute('href', './agify.html');
-  const againButton = document.createElement('againButton');
+  const againButton = document.createElement('button');
   againButton.innerText = 'GO AGAIN';
   a.append(againButton);
   container.append(a);
