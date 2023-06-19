@@ -1,44 +1,41 @@
-document.getElementById('submit-button').addEventListener('click', () => {
+document.getElementById('submit-button').addEventListener('click', async () => {
   const quantityOfNames = Number(document.getElementById('quantity-input').value);
   const names = document.getElementById('names-input').value.split(',');
-  if (inputValidation(quantityOfNames, names)) {
+  if (inputValidation({ quantityOfNames, names })) {
     document.querySelector('.container').style.display = 'none';
     document.querySelector('.loader').style.display = 'block';
-    fetchData(quantityOfNames, names).then((result) => {
-      document.querySelector('.loader').style.display = 'none';
-      document.querySelector('.container').style.display = 'block';
-      if (responseValidation(result, quantityOfNames)) {
-        if (quantityOfNames === 1) {
-          displayResponse([result]);
-        } else {
-          displayResponse(result);
-        }
+    const result = fetchData({ quantityOfNames, names });
+    document.querySelector('.loader').style.display = 'none';
+    document.querySelector('.container').style.display = 'block';
+    if (responseValidation({ result, quantityOfNames })) {
+      if (quantityOfNames === 1) {
+        displayResponse([result]);
+      } else {
+        displayResponse(result);
       }
-    });
+    }
   }
+  return;
 });
 
-const inputValidation = (quantityOfNames, names) => {
-  const alertMessage = document.querySelector('.alert-message');
-  if (alertMessage) {
-    alertMessage.remove();
-  }
+const inputValidation = (input) => {
+  document.querySelector('.alert-message')?.remove();
 
-  if (!quantityOfNames) {
+  if (!input.quantityOfNames) {
     const label = document.getElementById('quantity-label');
     const p = document.createElement('p');
     p.setAttribute('class', 'alert-message');
     p.innerText = 'You must choose the quantity before proceeding!';
     label.parentNode.insertBefore(p, label.nextSibling);
     return false;
-  } else if (names[0] === '') {
+  } else if (input.names[0] === '') {
     const label = document.getElementById('names-label');
     const p = document.createElement('p');
     p.setAttribute('class', 'alert-message');
     p.innerText = 'You must choose names before proceeding!';
     label.parentNode.insertBefore(p, label.nextSibling);
     return false;
-  } else if (quantityOfNames != names.length) {
+  } else if (input.quantityOfNames != input.names.length) {
     const label = document.getElementById('quantity-label');
     const p = document.createElement('p');
     p.setAttribute('class', 'alert-message');
@@ -50,39 +47,40 @@ const inputValidation = (quantityOfNames, names) => {
   }
 };
 
-const fetchData = async (quantityOfNames, names) => {
+const fetchData = async (input) => {
   try {
     let response = null;
-    if (quantityOfNames === 1) {
-      response = await fetch(`https://api.agify.io?name=${names[0]}`).then((res) => res.json());
+    if (input.quantityOfNames === 1) {
+      response = await fetch(`https://api.agify.io?name=${input.names[0]}`).then((res) => res.json());
     } else {
       let endpoint = 'https://api.agify.io?';
-      for (let i = 0; i < quantityOfNames; i++) {
-        if (i === quantityOfNames - 1) {
-          endpoint += `name[]=${names[i]}`;
+      for (let i = 0; i < input.quantityOfNames; i++) {
+        if (i === input.quantityOfNames - 1) {
+          endpoint += `name[]=${input.names[i]}`;
         } else {
-          endpoint += `name[]=${names[i]}&`;
+          endpoint += `name[]=${input.names[i]}&`;
         }
       }
       response = await fetch(endpoint).then((res) => res.json());
     }
     return response;
   } catch (error) {
-    if (error instanceof TypeError) {
-      if (error.message === 'Failed to fetch') {
-        alert('Vastust ei ole võimalik kuvada, sest siht-veebiaadress on vigane! Proovi uuesti!');
-        window.location.href = './agify.html';
-      }
+    if (error.message === 'Failed to fetch') {
+      alert('Vastust ei ole võimalik kuvada, sest siht-veebiaadress on vigane! Proovi uuesti!');
+    } else {
+      alert('Tekkis tundmatu probleem! Proovi uuesti!');
     }
+    window.location.href = './agify.html';
+    return;
   }
 };
 
-const responseValidation = (response, quantityOfNames) => {
-  if (quantityOfNames === 1) {
-    response = [response];
+const responseValidation = (data) => {
+  if (data.quantityOfNames === 1) {
+    data.response = [data.response];
   }
-  for (let i = 0; i < response.length; i++) {
-    if (response[i].age === null) {
+  for (let i = 0; i < data.response.length; i++) {
+    if (data.response[i].age === null) {
       const label = document.getElementById('quantity-label');
       const p = document.createElement('p');
       p.setAttribute('class', 'alert-message');
@@ -104,15 +102,13 @@ const displayResponse = (data) => {
     const div = document.createElement('div');
     div.setAttribute('class', 'inner_container');
     container.append(div);
-
     const p1 = document.createElement('p');
     p1.innerHTML = `<span>Name:</span> ${data[i].name}`;
+    div.appendChild(p1);
     const p2 = document.createElement('p');
     p2.innerHTML = `<span>Predicted age:</span> ${data[i].age}`;
-    div.appendChild(p1);
     div.appendChild(p2);
   }
-
   const a = document.createElement('a');
   a.setAttribute('href', './agify.html');
   const againButton = document.createElement('againButton');
